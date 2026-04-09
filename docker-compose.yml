@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  docs:
+    container_name: mintlify-docs
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Use init to ensure Node.js handles signals properly and reaps zombie processes
+    init: true
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount the source code
+      - .:/app
+      # Isolate node_modules inside the container to avoid OS architecture conflicts
+      - /app/node_modules
+    environment:
+      # Polling is required for hot-reloading across Windows/Docker file systems
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - NODE_ENV=development
+    restart: unless-stopped
